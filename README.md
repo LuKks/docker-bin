@@ -20,7 +20,7 @@ The user can disable any forced option in the code like so `--cwd=false`.
 
 #### `bin(dirname, [options])`
 
-Build and run the Dockerfile.
+Build and run the Dockerfile that is in `dirname`.
 
 The name and version from `package.json` is used to tag the Docker image.
 
