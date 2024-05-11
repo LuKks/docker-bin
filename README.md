@@ -14,11 +14,17 @@ npm i docker-bin
 require('docker-bin')(__dirname, { cwd: true })
 ```
 
+The user can disable any forced option in the code like so `--cwd=false`.
+
 ## API
 
 #### `bin(dirname, [options])`
 
-It uses `process.argv` as default options, unless you override them.
+Build and run the Dockerfile.
+
+The name and version from `package.json` is used to tag the Docker image.
+
+It uses `process.argv` to override the default options.
 
 Available `options`
 
@@ -32,8 +38,6 @@ Available `options`
   device = null // Map a specific device like /dev/ttyUSB0
 }
 ```
-
-For example, enable home dir by `--home` or forcefully enable it via code.
 
 ## License
 

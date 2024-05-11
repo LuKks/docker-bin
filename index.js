@@ -4,16 +4,19 @@ const { execFileSync } = require('child_process')
 const minimist = require('minimist')
 
 module.exports = function dockerBin (dirname, opts = {}) {
-  const argv = minimist(process.argv.slice(2))
+  const argv = minimist(process.argv.slice(2), {
+    boolean: ['sudo', 'persistent', 'cwd', 'home', 'privileged'],
+    string: ['device']
+  })
 
   const {
-    sudo = !!argv.sudo,
-    persistent = !!argv.persistent,
-    cwd = !!argv.cwd,
-    home = !!argv.home,
-    privileged = !!argv.privileged,
-    device = argv.device || null
-  } = opts
+    sudo = false,
+    persistent = false,
+    cwd = false,
+    home = false,
+    privileged = false,
+    device = null
+  } = { ...opts, ...argv }
 
   const pkg = require(path.join(dirname, 'package.json'))
   const tag = pkg.name + ':npm-' + pkg.version
