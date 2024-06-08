@@ -6,7 +6,15 @@ const minimist = require('minimist')
 module.exports = function dockerBin (dirname, opts = {}) {
   const argv = minimist(process.argv.slice(2), {
     boolean: ['sudo', 'persistent', 'cwd', 'home', 'privileged'],
-    string: ['device']
+    string: ['device'],
+    default: {
+      sudo: opts.sudo,
+      persistent: opts.persistent,
+      cwd: opts.cwd,
+      home: opts.home,
+      privileged: opts.privileged,
+      device: opts.device
+    }
   })
 
   const {
