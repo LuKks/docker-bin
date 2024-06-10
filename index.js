@@ -17,6 +17,8 @@ module.exports = function dockerBin (dirname, opts = {}) {
     }
   })
 
+  const variadic = parseVariadic(process.argv.slice(2))
+
   const {
     sudo = false,
     persistent = false,
@@ -46,7 +48,9 @@ module.exports = function dockerBin (dirname, opts = {}) {
       home ? ('-v=' + os.homedir() + ':/mnt/home') : null,
       privileged ? '--privileged' : null,
       device ? ('--device=' + device) : null,
-      imageId
+      imageId,
+      variadic ? '-ic' : null,
+      variadic ? variadic.join(' ') : null
     ], { sudo, stdio: 'inherit' })
   } catch (err) {
     process.exitCode = err.status || 1
@@ -65,4 +69,14 @@ function exec (cmd, args, opts = {}) {
   }
 
   return execFileSync(cmd, args.filter(v => v), { stdio })
+}
+
+function parseVariadic (argv) {
+  const index = argv.indexOf('--')
+
+  if (index === -1) {
+    return null
+  }
+
+  return argv.splice(index + 1)
 }
