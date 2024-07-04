@@ -15,6 +15,10 @@ module.exports = function dockerBin (dirname, opts = {}) {
       volume: opts.volume,
       privileged: opts.privileged,
       device: opts.device
+    },
+    alias: {
+      v: 'volume',
+      d: 'device'
     }
   })
 
