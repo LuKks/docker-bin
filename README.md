@@ -34,6 +34,7 @@ Available `options`
   persistent = false, // Keep container after being stopped
   cwd = false, // Map the working directory into /mnt/cwd
   home = false, // Map the home directory into /mnt/home
+  volume = null, // Map custom directories
   privileged = false, // Access to all devices, disables AppArmor/SELinux, etc
   device = null // Map a specific device like /dev/ttyUSB0
 }

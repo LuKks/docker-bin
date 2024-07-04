@@ -6,12 +6,13 @@ const minimist = require('minimist')
 module.exports = function dockerBin (dirname, opts = {}) {
   const argv = minimist(process.argv.slice(2), {
     boolean: ['sudo', 'persistent', 'cwd', 'home', 'privileged'],
-    string: ['device'],
+    string: ['device', 'volume'],
     default: {
       sudo: opts.sudo,
       persistent: opts.persistent,
       cwd: opts.cwd,
       home: opts.home,
+      volume: opts.volume,
       privileged: opts.privileged,
       device: opts.device
     }
@@ -24,6 +25,7 @@ module.exports = function dockerBin (dirname, opts = {}) {
     persistent = false,
     cwd = false,
     home = false,
+    volume = null,
     privileged = false,
     device = null
   } = { ...opts, ...argv }
@@ -40,18 +42,31 @@ module.exports = function dockerBin (dirname, opts = {}) {
 
     const imageId = exec('docker', ['build', '--tag=' + tag, '-q', dirname], { sudo }).toString().trim()
 
-    exec('docker', [
-      'run',
-      persistent ? null : '--rm',
-      '-ti',
-      cwd ? ('-v=' + path.resolve('.') + ':/mnt/cwd') : null,
-      home ? ('-v=' + os.homedir() + ':/mnt/home') : null,
-      privileged ? '--privileged' : null,
-      device ? ('--device=' + device) : null,
-      imageId,
-      variadic ? '-ic' : null,
-      variadic ? variadic.join(' ') : null
-    ], { sudo, stdio: 'inherit' })
+    const args = ['run', '-ti']
+
+    if (!persistent) args.push('--rm')
+
+    if (cwd) args.push('-v=' + path.resolve('.') + ':/mnt/cwd')
+    if (home) args.push('-v=' + os.homedir() + ':/mnt/home')
+    if (volume) {
+      const volumes = Array.isArray(volume) ? volume : [volume]
+
+      for (const v of volumes) {
+        args.push('-v=' + v)
+      }
+    }
+
+    if (privileged) args.push('--privileged')
+    if (device) args.push('--device=' + device)
+
+    args.push(imageId)
+
+    if (variadic) {
+      args.push('-ic')
+      args.push(variadic.join(' '))
+    }
+
+    exec('docker', args, { sudo, stdio: 'inherit' })
   } catch (err) {
     process.exitCode = err.status || 1
   }
